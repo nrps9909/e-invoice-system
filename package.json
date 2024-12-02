@@ -1,0 +1,21 @@
+{
+  "name": "e-invoice-system",
+  "version": "1.0.0",
+  "description": "去中心化电子发票抽奖平台",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "start": "vite preview",
+    "compile": "hardhat compile",
+    "deploy": "hardhat run scripts/deploy.js --network sepolia"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "ethers": "^6.6.2"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
+    "hardhat": "^2.17.2",
+    "vite": "^4.5.5"
+  }
+}
