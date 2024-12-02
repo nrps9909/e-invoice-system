@@ -4,12 +4,16 @@
   <meta charset="UTF-8" />
   <title>去中心化電子發票抽獎平台</title>
   <script type="module" src="./main.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <h1>電子發票抽獎</h1>
   <button id="connect">連接錢包</button>
+  <input type="text" id="invoiceNumber" placeholder="請輸入8位數發票號碼" />
   <button id="upload">上傳發票參與抽獎</button>
   <button id="draw">抽取幸運兒（僅限Owner）</button>
   <p id="status"></p>
+  <h2>已上傳的發票</h2>
+  <ul id="invoiceList"></ul>
 </body>
 </html>

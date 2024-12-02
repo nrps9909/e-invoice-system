@@ -2,12 +2,12 @@ const hre = require("hardhat");
 
 async function main() {
   const InvoiceLottery = await hre.ethers.getContractFactory("InvoiceLottery");
-  const durationMinutes = 10; // 设置抽奖持续时间，您可以根据需要调整
+  const durationMinutes = 60; // 設定抽獎持續時間為 60 分鐘
   const invoiceLottery = await InvoiceLottery.deploy(durationMinutes);
+  await invoiceLottery.waitForDeployment();
 
-  // 在 ethers.js v6 中，不需要等待 deployed()
-
-  console.log("InvoiceLottery deployed to:", invoiceLottery.target); // 注意，这里使用 `target` 而非 `address`
+  const address = await invoiceLottery.getAddress();
+  console.log("InvoiceLottery deployed to:", address);
 }
 
 main()
