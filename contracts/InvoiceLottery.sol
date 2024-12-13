@@ -52,8 +52,33 @@ contract InvoiceLottery {
         _;
     }
 
+    function uploadAllInvoices(address[] memory _participants, string[] memory _invoiceNumbers) public onlyOwner {
+        require(_participants.length == _invoiceNumbers.length, "Participants and invoice numbers length mismatch");
+        for (uint i = 0; i < _participants.length; i++) {
+            require(bytes(_invoiceNumbers[i]).length == 8, "Invoice number must be 8 digits");
+            require(_isNumeric(_invoiceNumbers[i]), "Invoice number must contain only digits");
+            invoices.push(Invoice(_participants[i], _invoiceNumbers[i]));
+            userInvoices[_participants[i]].push(_invoiceNumbers[i]);
+            // 確保參與者列表中不重複
+            if (!_isExistingParticipant(_participants[i])) {
+                participants.push(_participants[i]);
+            }
+            emit InvoiceUploaded(_participants[i]);
+        }
+    }
+
+    function _isExistingParticipant(address _participant) internal view returns (bool) {
+        for (uint i = 0; i < participants.length; i++) {
+            if (participants[i] == _participant) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     function uploadInvoice(string memory _invoiceNumber) public beforeEnd {
         require(bytes(_invoiceNumber).length == 8, "Invoice number must be 8 digits");
+        require(_isNumeric(_invoiceNumber), "Invoice number must contain only digits");
 
         // 確保同一用戶只加入一次到 participants 中
         bool isExistingParticipant = false;
@@ -127,8 +152,13 @@ contract InvoiceLottery {
     }
 
     function _generateRandomNumber() private view returns (string memory) {
-        // 簡化的隨機數生成（僅供示範，不適用於生產環境）
-        uint256 random = uint256(keccak256(abi.encodePacked(block.timestamp, block.prevrandao, invoices.length))) % 100000000;
+        uint256 random = uint256(keccak256(abi.encodePacked(
+            block.timestamp,
+            block.prevrandao, // 將 block.difficulty 改回 block.prevrandao
+            invoices.length,
+            msg.sender,
+            gasleft()
+        ))) % 100000000;
         string memory randomStr = random.toString();
         while (bytes(randomStr).length < 8) {
             randomStr = string(abi.encodePacked("0", randomStr));
@@ -139,5 +169,15 @@ contract InvoiceLottery {
     function getWinningNumbers() public view returns (string memory, string memory, string[] memory) {
         require(drawn, "Winning numbers have not been drawn yet");
         return (specialPrize, grandPrize, firstPrizes);
+    }
+
+    function _isNumeric(string memory str) internal pure returns (bool) {
+        bytes memory b = bytes(str);
+        for(uint i; i < b.length; i++){
+            if(b[i] < 0x30 || b[i] > 0x39){
+                return false;
+            }
+        }
+        return true;
     }
 }
