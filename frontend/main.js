@@ -1,349 +1,11 @@
 import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers@6.6.2/dist/ethers.min.js';
+import { contractAddress } from './contractAddress.js';
 
-// 確認合約地址是否正確
-const contractAddress = '0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9'; // 請替換為新部署的合約地址
-const contractABI = [
+// 引入合約的 ABI JSON 檔案
+import contractArtifact from './InvoiceLottery.json';
 
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_durationMinutes",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "participant",
-        "type": "address"
-      }
-    ],
-    "name": "InvoiceUploaded",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "winner",
-        "type": "address"
-      }
-    ],
-    "name": "WinnerSelected",
-    "type": "event"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_user",
-        "type": "address"
-      }
-    ],
-    "name": "checkIfWinner",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "drawWinner",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "drawWinningNumbers",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "drawn",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "firstPrizes",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getAllInvoices",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "participant",
-            "type": "address"
-          },
-          {
-            "internalType": "string",
-            "name": "invoiceNumber",
-            "type": "string"
-          }
-        ],
-        "internalType": "struct InvoiceLottery.Invoice[]",
-        "name": "",
-        "type": "tuple[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getParticipants",
-    "outputs": [
-      {
-        "internalType": "address[]",
-        "name": "",
-        "type": "address[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getWinningNumbers",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      },
-      {
-        "internalType": "string[]",
-        "name": "",
-        "type": "string[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "grandPrize",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "invoices",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "participant",
-        "type": "address"
-      },
-      {
-        "internalType": "string",
-        "name": "invoiceNumber",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "lotteryEndTime",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "owner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "participants",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "specialPrize",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address[]",
-        "name": "_participants",
-        "type": "address[]"
-      },
-      {
-        "internalType": "string[]",
-        "name": "_invoiceNumbers",
-        "type": "string[]"
-      }
-    ],
-    "name": "uploadAllInvoices",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "_invoiceNumber",
-        "type": "string"
-      }
-    ],
-    "name": "uploadInvoice",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "userInvoices",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "winner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "winnerDrawn",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
-];
+// 使用編譯後的 ABI
+const contractABI = contractArtifact.abi;
 
 let provider;
 let signer;
@@ -405,7 +67,7 @@ async function init() {
       await provider.send("eth_requestAccounts", []);
       signer = await provider.getSigner();
       
-      // 輸出當前連接的地址和網路資訊，用於調試
+      // 輸出當��連接的地址和網路資訊，用於調試
       const address = await signer.getAddress();
       const network = await provider.getNetwork();
       console.log("Connected address:", address);
@@ -413,10 +75,18 @@ async function init() {
       
       contract = new ethers.Contract(contractAddress, contractABI, signer);
       
-      const ownerAddress = await contract.owner();
-      console.log("Contract owner address:", ownerAddress);
-      if (address.toLowerCase() !== ownerAddress.toLowerCase()) {
-        alert("當前帳戶不是合約擁有者，無法執行某些操作。");
+      // 直接取得合約擁有者地址，不使用 ENS 解析
+      try {
+        const ownerAddress = await contract.owner();
+        const currentAddress = await signer.getAddress();
+        console.log("Contract owner address:", ownerAddress);
+        console.log("Current address:", currentAddress);
+        
+        if (currentAddress.toLowerCase() !== ownerAddress.toLowerCase()) {
+          alert("當前帳戶不是合約擁有者，無法執行某些操作。");
+        }
+      } catch (error) {
+        console.error("取得合約擁有者地址時發生錯誤:", error);
       }
 
       document.getElementById('status').innerText = '錢包已連接到本地網路';
@@ -496,6 +166,13 @@ document.getElementById('draw').addEventListener('click', async () => {
     const ownerAddress = await contract.owner();
     if (address.toLowerCase() !== ownerAddress.toLowerCase()) {
       alert("只有合約擁有者才能抽取中獎號碼");
+      return;
+    }
+
+    // 新增：檢查是否已經抽過獎
+    const winnerDrawn = await contract.winnerDrawn();
+    if (winnerDrawn) {
+      alert("已經完成抽獎，請重新部署合約或重置合約狀態。");
       return;
     }
 
@@ -591,5 +268,41 @@ document.getElementById('clear').addEventListener('click', async () => {
   } catch (error) {
     console.error("清除發票資料錯誤:", error);
     alert('發生錯誤，請查看控制台');
+  }
+});
+
+// 添加重置按鈕事件處理器
+document.getElementById('reset').addEventListener('click', async () => {
+  console.log("Reset button clicked");
+  try {
+    const address = await signer.getAddress();
+    const ownerAddress = await contract.owner();
+    if (address.toLowerCase() !== ownerAddress.toLowerCase()) {
+      alert("只有合約擁有者才能重置抽獎");
+      return;
+    }
+
+    const durationMinutes = 60; // 設定新的抽獎時間
+    console.log("重置抽獎...");
+    const tx = await contract.resetLottery(durationMinutes, {
+      gasLimit: 500000
+    });
+    await tx.wait();
+    
+    // 清除後端資料
+    await fetch('http://localhost:3000/api/clear-invoices', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ requester: address })
+    });
+
+    // 更新顯示
+    document.getElementById('status').innerText = '抽獎已重置';
+    displayInvoices([]);
+    
+    console.log("抽獎重置完成");
+  } catch (error) {
+    console.error("重置錯誤:", error);
+    alert('重置失敗，請查看控制台');
   }
 });

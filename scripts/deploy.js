@@ -1,4 +1,6 @@
 const hre = require("hardhat");
+const path = require('path');
+const fs = require('fs');
 
 async function main() {
   // 避免 Chain ID 不一致，確保使用正確的網絡
@@ -15,6 +17,14 @@ async function main() {
   
   const address = await invoiceLottery.getAddress();
   console.log("InvoiceLottery deployed to:", address);
+
+  // 修正：使用 path.join 來建構正確的檔案路徑
+  const contractAddressPath = path.join(__dirname, '..', 'frontend', 'contractAddress.js');
+  fs.writeFileSync(
+    contractAddressPath,
+    `export const contractAddress = '${address}';\n`,
+    'utf-8'
+  );
   
   // 將新的合約地址寫入文件或直接更新前端使用
   
